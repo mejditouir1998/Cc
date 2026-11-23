@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}{{ 'إنشاء حساب' if mode=='register' else 'تسجيل الدخول' }}{% endblock %}{% block body %}
+<main class="card"><h1>{{ 'إنشاء حساب جديد' if mode=='register' else 'مرحباً بعودتك' }}</h1><p class="intro">{{ 'أدخل بياناتك لإنشاء حساب' if mode=='register' else 'سجّل الدخول إلى حسابك للمتابعة' }}</p>
+{% for category,message in get_flashed_messages(with_categories=true) %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+{% if mode=='register' %}<label>الاسم الكامل</label><input name="name" required minlength="2" autocomplete="name">{% endif %}
+<label>البريد الإلكتروني</label><input type="email" name="email" required autocomplete="username">
+<label>كلمة المرور</label><input type="password" name="password" required minlength="8" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}">
+{% if mode=='register' %}<label>تأكيد كلمة المرور</label><input type="password" name="confirm" required minlength="8" autocomplete="new-password">{% endif %}
+<button class="submit" type="submit">{{ 'إنشاء الحساب' if mode=='register' else 'تسجيل الدخول' }}</button></form>
+<p class="foot">{% if mode=='register' %}لديك حساب؟ <a href="{{ url_for('login') }}">تسجيل الدخول</a>{% else %}ليس لديك حساب؟ <a href="{{ url_for('register') }}">إنشاء حساب جديد</a>{% endif %}</p></main>{% endblock %}

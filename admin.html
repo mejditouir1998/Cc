@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}لوحة المدير{% endblock %}{% block body %}
+<main class="card wide"><div class="top"><div><h1>لوحة تحكم المدير</h1><p class="intro" style="text-align:right;margin:6px 0">مرحباً {{ user['name'] }}</p></div><span class="tag">مدير النظام</span><form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="secondary">تسجيل الخروج</button></form></div>
+{% for category,message in get_flashed_messages(with_categories=true) %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+<div class="stats"><div class="stat"><strong>{{ users|length }}</strong><span>إجمالي الحسابات</span></div><div class="stat"><strong>{{ users|selectattr('role','equalto','admin')|list|length }}</strong><span>المديرون</span></div><div class="stat"><strong>{{ users|selectattr('role','equalto','user')|list|length }}</strong><span>المستخدمون</span></div></div>
+<h2>إدارة الحسابات والصلاحيات</h2><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الصلاحية</th><th>تاريخ الإنشاء</th><th>الإجراءات</th></tr></thead><tbody>
+{% for item in users %}<tr><td>{{ item['name'] }}</td><td>{{ item['email'] }}</td><td>{{ 'مدير' if item['role']=='admin' else 'مستخدم' }}</td><td>{{ item['created_at'] }}</td><td>
+{% if item['id'] != user['id'] %}
+<form class="inline" method="post" action="{{ url_for('change_role',user_id=item['id']) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="role" value="{{ 'user' if item['role']=='admin' else 'admin' }}"><button class="secondary">{{ 'إلغاء الإدارة' if item['role']=='admin' else 'ترقية لمدير' }}</button></form>
+<form class="inline" method="post" action="{{ url_for('delete_user',user_id=item['id']) }}" onsubmit="return confirm('تأكيد حذف الحساب؟')"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="danger">حذف</button></form>
+{% else %}الحساب الحالي{% endif %}</td></tr>{% endfor %}</tbody></table></div></main>{% endblock %}
